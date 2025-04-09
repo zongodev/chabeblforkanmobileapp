@@ -11,11 +11,13 @@ class DashCard extends StatelessWidget {
   const DashCard({
     Key? key,
     required this.sub,
-    required this.judgingCat,
+    required this.judgingCat, this.question,this.index,
   }) : super(key: key);
 
   final sub;
   final JudgingCat judgingCat;
+  final String? question;
+  final int? index;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class DashCard extends StatelessWidget {
       DashController(),
     );
     log("hedhi judgingcat${judgingCat.title}");
+    log("azeerrty${question}");
     return SizedBox(
       width: dashController.cat.value == "الترتيل نظرا من المصحف"
           ? MediaQuery.of(context).size.width * 0.47
@@ -55,6 +58,11 @@ class DashCard extends StatelessWidget {
                       ? Colors.blue[800]
                       : Color(0xFF863ED5),
                   onPressed: () {
+                    if(question=='التفسير'){
+                      sub["init"] == 0
+                          ? null
+                          : dashController.retryTafsir(sub, judgingCat);
+                    }
                     if (dashController.cat.value != "الترتيل نظرا من المصحف") {
                       sub["init"] == 0
                           ? null
@@ -76,6 +84,17 @@ class DashCard extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     if (dashController.cat.value != "الترتيل نظرا من المصحف") {
+                      if (question == 'التفسير') {
+                        // Logic for التفسير
+                        dashController.setCardClicked(sub, true);
+                        Timer(const Duration(seconds: 3), () {
+                          dashController.setCardClicked(sub, false);
+                        });
+                        if (sub["txt"] == 'صحيح' && sub["init"] == 1) return;
+                        if (sub["txt"] == 'مرادف' && sub["init"] == 1) return;
+                        if (sub["txt"] == 'خطأ' && sub["init"] == 1) return;
+                        dashController.updatePointsTafsir(sub, judgingCat,index??0);
+                      }else{
                       dashController.setCardClicked(sub, true);
                       print(sub["txt"]);
                       Timer(const Duration(seconds: 3), () {
@@ -83,15 +102,16 @@ class DashCard extends StatelessWidget {
                       });
                       if (sub["txt"] == 'حسن' && sub["init"] == 1) return;
                       if (sub["txt"] == 'ممتاز' && sub["init"] == 1) return;
+                      if (sub["txt"] == 'ضعيف' && sub["init"] == 1) return;
                       judgingCat.title["init"] == 0 &&
                               sub["txt"] != 'حسن' &&
-                              sub['txt'] != 'ممتاز'
+                              sub['txt'] != 'ممتاز' && sub['txt'] != 'ضعيف'
                           ? null /*:sub["txt"]!= 'حسن' && sub['txt'] != 'ممتاز'&&sub['nbr']>judgingCat.title["init"]?null*/
                           : dashController.updatePoints(sub, judgingCat);
                       if (dashController.judgingCat[0].items[2]["init"] == 3 ||
                           dashController.judgingCat[0].title["init"] <= 0) {
-                        dashController.nextPage(context, sub: sub);
-                      }
+                        dashController.nextPage(context, sub: sub,question: question);
+                      }}
                     } else {
                       dashController.setCardClicked(sub, true);
                       print(sub["txt"]);
@@ -130,7 +150,7 @@ class DashCard extends StatelessWidget {
                           side: BorderSide(
                               color: sub["isCardClicked"] &&
                                       (sub["txt"] == "حسن" ||
-                                          sub["txt"] == "ممتاز")
+                                          sub["txt"] == "ممتاز" || sub["txt"] == "صحيح" || sub["txt"] == "مرادف")
                                   ? Colors.green
                                   : sub["isCardClicked"]
                                       ? Colors.red

@@ -90,7 +90,7 @@ class WelcomePage extends StatelessWidget {
                         child: GridView.builder(
                           padding:
                               const EdgeInsets.symmetric(vertical: 15, horizontal: 180),
-                          itemCount: category.length,
+                          itemCount: categories.length,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 1,
                             childAspectRatio: 5,
@@ -100,8 +100,9 @@ class WelcomePage extends StatelessWidget {
                           itemBuilder: (BuildContext context, int index) {
                             return DashboardCardCat(
                               press: () async {
-                                controller.catID.value= await controller.fetchCategoryId(category[index]["cat"]);
-                                controller.cat.value= category[index]["cat"];
+                                controller.catID.value= await controller.fetchCategoryId(categories[index]["cat"]);
+                                controller.cat.value= categories[index]["cat"];
+                                controller.getQuestionList(categories[index]["cat"]);
                                 log("hedhi l cat ${controller.cat.value}");
                                 log("$index");
                                 Navigator.push(context, MaterialPageRoute(
@@ -110,8 +111,8 @@ class WelcomePage extends StatelessWidget {
                                   },
                                 ));
                               },
-                              iconSrc: category[index]["icon"],
-                              Title: category[index]["title"],
+                              iconSrc: categories[index]["icon"],
+                              Title: categories[index]["title"],
                             );
                           },
                         ),

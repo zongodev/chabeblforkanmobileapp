@@ -12,6 +12,7 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('score $score');
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

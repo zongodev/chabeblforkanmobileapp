@@ -6,11 +6,13 @@ class DashRow extends StatelessWidget {
   const DashRow({
     Key? key,
     required this.subcategories,
-    required this.judgcat,
+    required this.judgcat, this.question,this.index,
   }) : super(key: key);
 
   final List subcategories;
   final JudgingCat judgcat;
+  final String? question;
+  final int? index;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class DashRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (var subcategory in firstThird)
-                DashCard(sub: subcategory, judgingCat: judgcat),
+                DashCard(sub: subcategory, judgingCat: judgcat,question:question,index: index,),
             ],
           ),
           SizedBox(height: 20),
@@ -36,7 +38,7 @@ class DashRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (var subcategory in secondThird)
-                DashCard(sub: subcategory, judgingCat: judgcat),
+                DashCard(sub: subcategory, judgingCat: judgcat,question:question,index: index,),
             ],
           ),
           SizedBox(height: 20),
@@ -44,7 +46,7 @@ class DashRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (var subcategory in thirdThird)
-                DashCard(sub: subcategory, judgingCat: judgcat),
+                DashCard(sub: subcategory, judgingCat: judgcat,question:question,index: index,),
             ],
           ),
         ],
@@ -54,7 +56,7 @@ class DashRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           for (var subcategory in subcategories)
-            DashCard(sub: subcategory, judgingCat: judgcat),
+            DashCard(sub: subcategory, judgingCat: judgcat,question:question,index: index,),
         ],
       );
     }
