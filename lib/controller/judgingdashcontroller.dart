@@ -56,7 +56,7 @@ class DashController extends GetxController {
     JudgingCat(
       {"title": 'الوقف والابتداء', "init": 2},
       [
-        {"txt": 'الوقف والابتداء', "nbr": 1, "init": 0, "isCardClicked": false},
+        {"txt": 'الوقف والابتداء', "nbr": 0.5, "init": 0, "isCardClicked": false},
       ],
     ),
     JudgingCat(
@@ -70,8 +70,8 @@ class DashController extends GetxController {
       {"title": 'الأداء', "init": 0},
       [
         {"txt": 'ضعيف', "nbr": 0, "init": 0, "isCardClicked": false},
-        {"txt": 'حسن', "nbr": 1, "init": 0, "isCardClicked": false},
-        {"txt": 'ممتاز', "nbr": 2, "init": 0, "isCardClicked": false},
+        {"txt": 'حسن', "nbr": 0.5, "init": 0, "isCardClicked": false},
+        {"txt": 'ممتاز', "nbr": 1.5, "init": 0, "isCardClicked": false},
       ],
     ),
   ].obs;
@@ -107,16 +107,16 @@ class DashController extends GetxController {
     JudgingCat(
       {"title": 'مفردة 1', "init": 0},
       [
-        {"txt": 'صحيح', "nbr": 2, "init": 0, "isCardClicked": false},
-        {"txt": 'مرادف', "nbr": 1, "init": 0, "isCardClicked": false},
+        {"txt": 'صحيح', "nbr": 1, "init": 0, "isCardClicked": false},
+        {"txt": 'مرادف', "nbr": 0.5, "init": 0, "isCardClicked": false},
         {"txt": 'خطأ', "nbr": 0, "init": 0, "isCardClicked": false},
       ],
     ),
     JudgingCat(
       {"title": 'مفردة 2', "init": 0},
       [
-        {"txt": 'صحيح', "nbr": 2, "init": 0, "isCardClicked": false},
-        {"txt": 'مرادف', "nbr": 1, "init": 0, "isCardClicked": false},
+        {"txt": 'صحيح', "nbr": 1, "init": 0, "isCardClicked": false},
+        {"txt": 'مرادف', "nbr": 0.5, "init": 0, "isCardClicked": false},
         {"txt": 'خطأ', "nbr": 0, "init": 0, "isCardClicked": false},
       ],
     ),
@@ -141,61 +141,98 @@ class DashController extends GetxController {
 
   void updatePoints(Map<String, dynamic> item, JudgingCat judgCat) {
     double pointsToAdd = item['nbr'].toDouble();
-    item['init'] += 1;
-    print("hedhi init ${item['init']}");
 
     // Logic for حسن
     if (item['txt'] == 'حسن') {
-      isAdaaSelected.value=true;
-      judgCat.title["init"] = item["nbr"];
-      some.value += pointsToAdd;
+      isAdaaSelected.value = true;
 
-      // Remove points from ممتاز if already selected
-      if (judgingCat[3].items[2]["init"] == 1) {  // Index updated to 2 for ممتاز
-        judgingCat[3].items[2]["init"] -= 1;
-        some.value -= judgingCat[3].items[2]["nbr"];
+      // First click: add 0.5, second click: add another 0.5, limit to max 2 clicks
+      if (item['init'] == 0) {
+        item['init'] += 1;
+        judgCat.title["init"] = 0.5;
+        some.value += 0.5;
+      } else if (item['init'] == 1) {
+        item['init'] += 1;
+        judgCat.title["init"] = 1.0;
+        some.value += 0.5;
+      }
+      // No action if already clicked twice
+
+      // Remove points from ممتاز if already selected, based on its current state
+      if (judgingCat[3].items[2]["init"] == 2) {
+        // If ممتاز was clicked twice (init=2), remove 2.0 points
+        some.value -= 2.0;
+        judgingCat[3].items[2]["init"] = 0;
+      } else if (judgingCat[3].items[2]["init"] == 1) {
+        // If ممتاز was clicked once (init=1), remove 1.5 points
+        some.value -= 1.5;
+        judgingCat[3].items[2]["init"] = 0;
       }
 
       // Remove points from ضعيف if already selected
-      if (judgingCat[3].items[0]["init"] == 1) {  // Index updated to 0 for ضعيف
-        judgingCat[3].items[0]["init"] -= 1;
-        some.value -= judgingCat[3].items[0]["nbr"];
+      if (judgingCat[3].items[0]["init"] >= 1) {
+        judgingCat[3].items[0]["init"] = 0;
       }
     }
     // Logic for ممتاز
     else if (item['txt'] == 'ممتاز') {
-      isAdaaSelected.value=true;
-      judgCat.title["init"] = item["nbr"];
-      some.value += pointsToAdd;
+      isAdaaSelected.value = true;
 
-      // Remove points from حسن if already selected
-      if (judgingCat[3].items[1]["init"] == 1) {  // Index updated to 1 for حسن
-        judgingCat[3].items[1]["init"] -= 1;
-        some.value -= judgingCat[3].items[1]["nbr"];
+      // First click: add 1.5, second click: add 0.5 more, limit to max 2 clicks
+      if (item['init'] == 0) {
+        item['init'] += 1;
+        judgCat.title["init"] = 1.5;
+        some.value += 1.5;
+      } else if (item['init'] == 1) {
+        item['init'] += 1;
+        judgCat.title["init"] = 2.0;
+        some.value += 0.5;
+      }
+      // No action if already clicked twice
+
+      // Remove points from حسن if already selected, based on its current state
+      if (judgingCat[3].items[1]["init"] == 2) {
+        // If حسن was clicked twice (init=2), remove 1.0 points
+        some.value -= 1.0;
+        judgingCat[3].items[1]["init"] = 0;
+      } else if (judgingCat[3].items[1]["init"] == 1) {
+        // If حسن was clicked once (init=1), remove 0.5 points
+        some.value -= 0.5;
+        judgingCat[3].items[1]["init"] = 0;
       }
 
       // Remove points from ضعيف if already selected
-      if (judgingCat[3].items[0]["init"] == 1) {  // Index updated to 0 for ضعيف
-        judgingCat[3].items[0]["init"] -= 1;
-        some.value -= judgingCat[3].items[0]["nbr"];
+      if (judgingCat[3].items[0]["init"] >= 1) {
+        judgingCat[3].items[0]["init"] = 0;
       }
     }
     // Logic for ضعيف
     else if (item['txt'] == 'ضعيف') {
-      isAdaaSelected.value=true;
+      isAdaaSelected.value = true;
       judgCat.title["init"] = 0;
       some.value += 0;
+      item['init'] += 1;
 
-      // Remove points from حسن if already selected
-      if (judgingCat[3].items[1]["init"] == 1) {  // Index updated to 1 for حسن
-        judgingCat[3].items[1]["init"] -= 1;
-        some.value -= judgingCat[3].items[1]["nbr"];
+      // Remove points from حسن if already selected, based on its current state
+      if (judgingCat[3].items[1]["init"] == 2) {
+        // If حسن was clicked twice (init=2), remove 1.0 points
+        some.value -= 1.0;
+        judgingCat[3].items[1]["init"] = 0;
+      } else if (judgingCat[3].items[1]["init"] == 1) {
+        // If حسن was clicked once (init=1), remove 0.5 points
+        some.value -= 0.5;
+        judgingCat[3].items[1]["init"] = 0;
       }
 
-      // Remove points from ممتاز if already selected
-      if (judgingCat[3].items[2]["init"] == 1) {  // Index updated to 2 for ممتاز
-        judgingCat[3].items[2]["init"] -= 1;
-        some.value -= judgingCat[3].items[2]["nbr"];
+      // Remove points from ممتاز if already selected, based on its current state
+      if (judgingCat[3].items[2]["init"] == 2) {
+        // If ممتاز was clicked twice (init=2), remove 2.0 points
+        some.value -= 2.0;
+        judgingCat[3].items[2]["init"] = 0;
+      } else if (judgingCat[3].items[2]["init"] == 1) {
+        // If ممتاز was clicked once (init=1), remove 1.5 points
+        some.value -= 1.5;
+        judgingCat[3].items[2]["init"] = 0;
       }
     }
     // Logic for points exceeding the allowed total
@@ -208,14 +245,14 @@ class DashController extends GetxController {
     }
     // Default case for other point removal scenarios
     else {
+      item['init'] += 1;
       judgCat.title["init"] -= pointsToAdd;
       some.value -= pointsToAdd;
       print(judgCat.title["init"]);
     }
 
     update();
-  }
-  void updatePointsTartil(Map<String, dynamic> item, JudgingCat judgCat) {
+  }  void updatePointsTartil(Map<String, dynamic> item, JudgingCat judgCat) {
     double pointsToAdd = item['nbr'].toDouble();
     item['init'] += 1;
     print("hedhi init ${item['init']}");
@@ -301,30 +338,56 @@ class DashController extends GetxController {
 
 
   void retry(Map<String, dynamic> item, JudgingCat judgingCat) {
-    double pointsToAdd = item['nbr'].toDouble();
+    double pointsToRemove = item['nbr'].toDouble();
 
-    item['init'] -= 1;
-    print(item['init']);
-    print(item['pointsToAdd']);
-
-    if (item['txt'] == 'حسن' || item['txt'] == 'ممتاز') {
-      judgingCat.title["init"] -= pointsToAdd;
-      some.value -= pointsToAdd;
-      print(judgingCat.title["init"]);
-    } else if(isLastOne.value){
+    // Special handling for حسن
+    if (item['txt'] == 'حسن') {
+      // Handle removal based on current init value
+      if (item['init'] == 2) {
+        // Second click being undone - remove 0.5 points
+        judgingCat.title["init"] -= 0.5;
+        some.value -= 0.5;
+      } else if (item['init'] == 1) {
+        // First click being undone - remove 0.5 points
+        judgingCat.title["init"] -= 0.5;
+        some.value -= 0.5;
+      }
+      item['init'] -= 1;
+    }
+    // Special handling for ممتاز
+    else if (item['txt'] == 'ممتاز') {
+      // Handle removal based on current init value
+      if (item['init'] == 2) {
+        // Second click being undone - remove 0.5 points
+        judgingCat.title["init"] -= 0.5;
+        some.value -= 0.5;
+      } else if (item['init'] == 1) {
+        // First click being undone - remove 1.5 points
+        judgingCat.title["init"] -= 1.5;
+        some.value -= 1.5;
+      }
+      item['init'] -= 1;
+    }
+    // Handle the case where last action caused exceeding points
+    else if (isLastOne.value) {
       judgingCat.title["init"] += pointremoved.value;
       some.value += pointremoved.value;
-      isLastOne.value=false;
-      update();
-      print(judgingCat.title["init"]);
-      print("hedhi hiya ya weldiiiii ${pointremoved.value.toString()}");
+      isLastOne.value = false;
+      item['init'] -= 1;
     }
+    // Default case for other items
     else {
-      judgingCat.title["init"] += pointsToAdd;
-      some.value += pointsToAdd;
-
-      print(judgingCat.title["init"]);
+      judgingCat.title["init"] += pointsToRemove;
+      some.value += pointsToRemove;
+      item['init'] -= 1;
     }
+
+    // Ensure init doesn't go below zero
+    if (item['init'] < 0) {
+      item['init'] = 0;
+    }
+
+    print("Item: ${item['txt']}, Init: ${item['init']}, Points: ${judgingCat.title["init"]}, Total: ${some.value}");
     update();
   }
 

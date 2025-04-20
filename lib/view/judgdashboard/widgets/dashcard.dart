@@ -100,8 +100,8 @@ class DashCard extends StatelessWidget {
                       Timer(const Duration(seconds: 3), () {
                         dashController.setCardClicked(sub, false);
                       });
-                      if (sub["txt"] == 'حسن' && sub["init"] == 1) return;
-                      if (sub["txt"] == 'ممتاز' && sub["init"] == 1) return;
+                      if (sub["txt"] == 'حسن' && sub["init"] == 2) return;
+                      if (sub["txt"] == 'ممتاز' && sub["init"] == 2) return;
                       if (sub["txt"] == 'ضعيف' && sub["init"] == 1) return;
                       judgingCat.title["init"] == 0 &&
                               sub["txt"] != 'حسن' &&
